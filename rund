@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--image', help='name of the docker image to run', type=str, default='nvcr.io/nvidia/merlin/merlin-pytorch-training:22.05')
+parser.add_argument('-c', '--cmd', help='cmd to run', type=str, default='jupyter notebook --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token=""')
+parser.add_argument('-np', '--no-port-forwarding', help='forward port 8888', action='store_true')
+
+args = parser.parse_args()
+
+docker_cmd = ['docker run -it --gpus all --ipc=host']
+if not args.no_port_forwarding:
+    docker_cmd.append('-p 8888:8888')
+docker_cmd.append('--mount src=`pwd`,target=/workspace,type=bind --ulimit memlock=-1 --ulimit stack=67108864 --entrypoint="" -w /workspace')
+docker_cmd += [args.image, args.cmd]
+
+print(os.popen(' '.join(docker_cmd)))
