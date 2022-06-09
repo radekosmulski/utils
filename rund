@@ -11,7 +11,7 @@ parser.add_argument('-np', '--no-port-forwarding', help='forward port 8888', act
 args = parser.parse_args()
 
 docker_cmd = ['docker run -it --gpus all --ipc=host']
-if not args.no_port_forwarding:
+if args.no_port_forwarding is False:
     docker_cmd.append('-p 8888:8888')
 docker_cmd.append('--mount src=`pwd`,target=/workspace,type=bind --ulimit memlock=-1 --ulimit stack=67108864 --entrypoint="" -w /workspace')
 docker_cmd += [args.image, args.cmd]
