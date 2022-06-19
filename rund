@@ -9,12 +9,13 @@ default_image = os.environ.get('DEFAULT_DOCKER_IMAGE', 'nvcr.io/nvidia/merlin/me
 parser.add_argument('-i', '--image', help='name of the docker image to run', type=str, default=default_image)
 parser.add_argument('-c', '--cmd', help='cmd to run', type=str, default='jupyter notebook --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token=""')
 parser.add_argument('-np', '--no-port-forwarding', help='forward port 8888', action='store_true')
+parser.add_argument('-p', '--port', help='port on host to forward 8888 to', default=8888)
 
 args = parser.parse_args()
 
 docker_cmd = ['docker run -it --rm --gpus all --ipc=host']
 if args.no_port_forwarding is False:
-    docker_cmd.append('-p 8888:8888')
+    docker_cmd.append(f'-p {args.port}:8888')
 docker_cmd.append('--mount src=`pwd`,target=/workspace,type=bind --ulimit memlock=-1 --ulimit stack=67108864 --entrypoint="" -w /workspace')
 docker_cmd += [args.image, args.cmd]
 
