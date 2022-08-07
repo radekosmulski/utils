@@ -2,10 +2,11 @@
 
 import argparse
 import subprocess
+from pathlib import Path
 import os
 
 parser = argparse.ArgumentParser()
-default_image = os.environ.get('DEFAULT_DOCKER_IMAGE', 'nvcr.io/nvidia/merlin/merlin-pytorch-training:22.05')
+default_image = os.environ.get('DEFAULT_DOCKER_IMAGE', 'nvcr.io/nvidia/merlin/merlin-pytorch-training:latest')
 parser.add_argument('-i', '--image', help='name of the docker image to run', type=str, default=default_image)
 parser.add_argument('-c', '--cmd', help='cmd to run', type=str, default='jupyter notebook --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token=""')
 parser.add_argument('-np', '--no-port-forwarding', help='forward port 8888', action='store_true')
@@ -16,7 +17,10 @@ args = parser.parse_args()
 docker_cmd = ['docker run -it --rm --gpus all --ipc=host']
 if args.no_port_forwarding is False:
     docker_cmd.append(f'-p {args.port}:8888')
-docker_cmd.append('--mount src=`pwd`,target=/workspace,type=bind --ulimit memlock=-1 --ulimit stack=67108864 --entrypoint="" -w /workspace')
+docker_cmd.append(f'--mount src=`pwd`,target=/workspace,type=bind --mount src={Path.home()/".jupyter"},target=/root/.jupyter,type=bind --ulimit memlock=-1 --ulimit stack=67108864 --entrypoint="" -w /workspace')
+if 'WANDB_API_KEY' in os.environ:
+    docker_cmd.append(f'-e WANDB_API_KEY={os.environ["WANDB_API_KEY"]}')
+
 docker_cmd += [args.image, args.cmd]
 
 subprocess.call(' '.join(docker_cmd), shell=True)
