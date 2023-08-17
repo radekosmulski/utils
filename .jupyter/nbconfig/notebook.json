@@ -1,0 +1,21 @@
+{
+  "keys": {
+    "command": {
+      "bind": {
+        "ctrl-up": "jupyter-notebook:move-cell-up",
+        "ctrl-down": "jupyter-notebook:move-cell-down",
+        "9,9": "jupyter-notebook:run-all-cells-above"
+      }
+    }
+  },
+  "load_extensions": {
+    "nbextensions_configurator/config_menu/main": true,
+    "contrib_nbextensions_help_item/main": true,
+    "spellchecker/main": true
+  },
+  "Cell": {
+    "cm_config": {
+      "lineNumbers": false
+    }
+  }
+}
