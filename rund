@@ -29,5 +29,6 @@ if 'WANDB_API_KEY' in os.environ:
 if 'jupyter notebook' in args.cmd:
     docker_cmd.append(f'-e JUPYTER_CONFIG_PATH=/root/.jupyter')
 
+docker_cmd.append('--net="host"')
 docker_cmd += [args.image, args.cmd]
 subprocess.call(' '.join(docker_cmd), shell=True)
